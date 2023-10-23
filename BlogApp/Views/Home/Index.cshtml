@@ -1,0 +1,138 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@{
+    List<Blog> BlogList = new List<Blog>();
+}
+
+@model List<Blog>
+
+
+
+
+
+<div class="container-fluid">
+
+   <section>
+    <div id="carouselExample" class="carousel slide">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="https://wallpaperaccess.com/full/3876166.jpg" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+                <img src="https://techcrunch.com/wp-content/uploads/2017/11/kindle-evolution1.jpg?w=1390&crop=1" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+                <img src="https://images.pexels.com/photos/7244562/pexels-photo-7244562.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" class="d-block w-100" alt="...">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>  
+    </section>
+    <hr/>
+    <section>
+        <div class="container">
+            <h1 class="text-center m-2 text_variant">Featured Blogs</h1>
+            <hr />
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    <div class="col-lg-4 col-md-4 col-12">
+                        <div class="card mb-4" style="width: 100%; transform:scale(0.8)">
+                       
+                            <img src="@Html.DisplayFor(modelItem => item.FilePath)" class="card-img-top card_image" alt="images">
+                            <div class="card-body">
+                                <h4 class="card-title text-center text_variant mb-2 ">@Html.DisplayFor(modelItem => item.BlogTitle)</h4>
+                                <h6 class="card-subtitle text-center text-italic mb-2 text-secondary card_overflow">
+                                    @Html.DisplayFor(modelItem => item.BlogSubtitle)
+                                </h6>
+                                <p class="card-text mb-2 text-center fw-light card_overflow">
+                                    @Html.DisplayFor(modelItem => item.BlogDescription)
+                                </p>
+                                <p class="card-text text-italic text-center fw-bold">
+                                    @if (!string.IsNullOrWhiteSpace(item.BlogKeywords))
+                                    {
+                                        <span>#@item.BlogKeywords.Replace(",", ",#")</span>
+                                    }
+                                </p>
+                                <button href="#" class="submit_button">Read-More</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </section>
+
+    
+@*     <table class="table">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model=>model.BlogId)</th>
+
+
+                <th>@Html.DisplayNameFor(model=>model.BlogSubtitle)</th>
+
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem=>item.Id)</td>
+
+
+                    <td>@Html.DisplayFor(modelItem=>item.Name)</td>
+                </tr>
+            }
+        </tbody>
+    </table> 
+ *@
+   <!-- Specify the model type at the top of your view -->
+ <!-- Specify the model type at the top of your view -->
+
+
+
+
+</div>
+
+@section scripts {
+    <script>
+     
+
+        fetch('/Upload/GetBlogs', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json', // You can adjust the content type as needed
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                BlogList = data;
+
+                console.log(BlogList);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+
+
+    </script>
+
+}
+

@@ -1,0 +1,170 @@
+﻿@page
+@model Blog
+
+
+<div class="container-fluid">
+    <hr/>
+    <h2 class="mt-3 text-center" style="font-variant-caps:all-petite-caps">Write your blog here</h2>
+    <hr/>
+    <!-- Single form for both file upload and title/description -->
+    <form asp-controller="Upload" asp-action="UploadContent" method="post" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-12">
+                <div class="form-group">
+                    <div class="border p-3 mb-3 file_drop" id="file-drop-zone">
+                        <h5 class="mb-0 fw-light">Drag and drop image files here or click to select image files.</h5>
+                        <input type="file" id="file-input" accept="image/*" multiple name="files" style="display: none;" max="3"/>
+                        <label class="mt-1 text_format fw-bold" for="file-input">Click to select files</label>
+                    </div>
+                    <div id="image-preview-container" style="display: none;">
+                        <img id="image-preview" src="" alt="Image Preview" class="img-thumbnail"/>
+                        </div>
+                   
+                    <ul id="file-list" class="list-group" style="display:none">
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-12 col-12">
+                <div class="form-group">
+                    <label class="blog_label" for="title">Title :</label>
+                    <textarea class="blog_input form-control fs-4 fw-bold" type="text" id="title" name="title" placeholder="Provide a title for your blog"></textarea>
+                    
+                </div>
+                <div class="form-group">
+                    <label class="blog_label" for="subtitle">Sub-Title :</label>
+                    <textarea class="blog_input form-control fs-5 fst-italic " type="text" id="subtitle" name="subtitle" placeholder="Provide a subtitle describing your blog "></textarea>
+
+                </div>
+            <div class="form-group">
+                    <label class="blog_label" for="description">Description :</label>
+                    <textarea class="blog_input form-control fs-6" id="description" name="description" style="height:50vh" placeholder="Provide description for your blog"></textarea>
+
+            </div>
+            <div class="form-group">
+                    <label class="blog_label" for="keywords">Keywords :</label>
+                    <textarea class="blog_input form-control fs-6" id="keywords" name="keywords" placeholder="Provide keywords regarding your blog separated by commas"></textarea>
+
+            </div>
+            </div>
+            </div>
+        <button type="submit" class="blog_submit">Post your Blog</button>
+    </form>
+</div>
+
+
+@section scripts {
+    <script>
+        const dropZone = document.getElementById('file-drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const fileList = document.getElementById('file-list');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const fileDropZone = document.getElementById("file-drop-zone");
+
+        const imagePreview = document.getElementById('image-preview');
+
+
+        fileInput.addEventListener("change", function () {
+            if (fileInput.files.length > 0) {
+               
+                fileDropZone.style.display = "none";
+
+                fileDropZone.classList.remove("file-drop");
+            } else {
+
+                fileDropZone.style.display = "block";
+
+                fileDropZone.classList.add("file-drop");
+            }
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        fileInput.addEventListener('change', () => {
+            const files = fileInput.files;
+            handleFiles(files);
+        });
+
+
+
+        function handleFiles(files) {
+            for (const file of files) {
+                const listItem = document.createElement('li');
+                imagePreviewContainer.innerHTML = '';
+                const formData = new FormData();
+                formData.append('files', file);
+                listItem.textContent = file.name;
+                fileList.appendChild(listItem);
+
+                let isFirstImage = true; // Track the first image in the loop
+
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (file.type.startsWith('image/')) {
+                        const url = URL.createObjectURL(file);
+                        const image = document.createElement('img');
+                        image.classList.add('img-thumbnail');
+                        
+                        image.src = url;
+                        const imageContainer = document.createElement('div');
+
+                      
+
+                        if (isFirstImage) {
+                            imageContainer.classList.add('col-lg-12');
+                            image.classList.add('blog_image');
+                            isFirstImage = false;
+                        } else {
+                            imageContainer.classList.add('col-lg-6');
+                            image.classList.add('blog_secondary_image');
+                        }
+
+                        imageContainer.appendChild(image);
+
+                        if (i % 3 === 0) {
+                            // If the current image is the first in a new row (every 3rd image), create a new row element
+                            const rowContainer = document.createElement('div');
+                            rowContainer.classList.add('row');
+                            rowContainer.appendChild(imageContainer);
+                            imagePreviewContainer.appendChild(rowContainer);
+                        } else {
+                            // Add the image to the existing row
+                            const rowContainer = imagePreviewContainer.lastChild;
+                            rowContainer.appendChild(imageContainer);
+                        }
+                    }
+                }
+
+                imagePreviewContainer.style.display = 'block';
+
+                fetch('/Upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data.FileUrls);
+                        console.log(data.FileNames);
+                    })
+                    .catch(error => {
+                        console.error('Error uploading files:', error);
+                    });
+            }
+        }
+
+
+    </script>
+}
