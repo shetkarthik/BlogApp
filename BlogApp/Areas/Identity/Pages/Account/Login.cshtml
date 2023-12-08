@@ -6,19 +6,18 @@
 }
 
 @* <h1>@ViewData["Title"]</h1> *@
-
+<section>
 <div class="row">
     <div class="col-lg-8 col-md-6 col-12 loginimage">
-        <img src="https://static01.nyt.com/images/2022/04/24/books/24-reading-NY-alt/00-reading-NY-04-superJumbo.jpg" />
+        <img src="https://idsb.tmgrup.com.tr/ly/uploads/images/2021/10/05/149793.jpg"  />
     </div>
-    <div class="col-lg-4 col-md-6 col-12 d-block m-auto layout">
+    <div class="col-lg-4 col-md-6 col-12 layout">
+        <div class="d-grid align-content-stretch mt-5">
+
+
         <form id="account" method="post">
             <h2 class="text-center text_variant">Log-In</h2>
-            <blockquote class="blockquote text-center" style="font-size:13px">
-                <p class="mb-1">"Books may well be the only true magic."</p>
-                <br />
-                <footer class="blockquote-footer"> Alice Hoffman, <cite title="Source Title">Magic Lessons</cite></footer>
-            </blockquote>
+
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger" style="font-size:12px"></div>
             <div class="form-floating">
@@ -44,7 +43,7 @@
                 <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl"><strong>Register</strong></a>
             </p>
             <div>
-                <button id="login-submit" type="submit" class="btn submit_button">Log in</button>
+                <button id="login-submit" type="submit" class="submit_button w-50">Log in</button>
             </div>
             <div>
                 @* <p>
@@ -56,6 +55,7 @@
                 </p> *@
             </div>
         </form>
+            </div>
     </div>
     @* <div class="col-md-6 col-md-offset-2">
     <section>
@@ -88,6 +88,7 @@
     </section>
     </div> *@
 </div>
+</section>
 
 
 

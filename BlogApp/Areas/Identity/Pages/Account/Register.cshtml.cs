@@ -161,7 +161,9 @@ namespace BlogApp.Areas.Identity.Pages.Account
                     FullName = Input.FullName, Email = Input.Email, Password = Input.Password,
                     ContactNo = Input.PhoneNo,
                     Gender = (Input.SelectedGender).ToString(),
-                    Designation = Input.Designation
+                    Designation = Input.Designation,
+                    UserId = user.Id,
+                   
                 };
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);

@@ -2,6 +2,9 @@ using BlogApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.FileProviders;
+using Auth0.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Okta.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +15,10 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(buil
 
 builder.Services.AddDefaultIdentity<IdentityUser>().AddDefaultTokenProviders().AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
+
+
+
+
 
 var app = builder.Build();
 

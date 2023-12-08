@@ -5,29 +5,36 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BlogApp.Data;
 using BlogApp.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using BlogApp.Data;
+using System.Security.Claims;
 
 namespace BlogApp.Controllers
 {
-    [Authorize(Roles="admin")]
+    [Authorize(Roles = "admin")]
     public class UsersController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public UsersController(AppDbContext context)
+        public UsersController(AppDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Users
         public async Task<IActionResult> Index()
         {
-              return _context.UserInfo != null ? 
-                          View(await _context.UserInfo.ToListAsync()) :
-                          Problem("Entity set 'AppDbContext.UserInfo'  is null.");
+            return _context.UserInfo != null ?
+                        View(await _context.UserInfo.ToListAsync()) :
+                        Problem("Entity set 'AppDbContext.UserInfo'  is null.");
         }
+
+
+
 
         // GET: Users/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -152,14 +159,30 @@ namespace BlogApp.Controllers
             {
                 _context.UserInfo.Remove(user);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool UserExists(int id)
         {
-          return (_context.UserInfo?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.UserInfo?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        [HttpGet]
+        public IActionResult GetUsername(string userId)
+        {
+            var user = _userManager.FindByIdAsync(userId).Result;
+
+            if (user != null)
+            {
+                return Ok(user.UserName);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
     }
 }

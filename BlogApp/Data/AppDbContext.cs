@@ -14,5 +14,14 @@ namespace BlogApp.Data
         public DbSet<User> UserInfo { get; set; }
 
         public DbSet<Blog> Blogs { get; set; }
+
+        public DbSet<Likes> Likes { get; set; }
+
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<Feed> Feeds { get; set; }
+
+        public DbSet<FeedLike> FeedLikes { get; set; }
+        public DbSet<FeedComments> FeedComments { get; set; }
+
     }
 }

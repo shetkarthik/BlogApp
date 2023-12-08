@@ -25,10 +25,12 @@ namespace BlogApp.Controllers
         }
 
         [HttpPost]
+        [DisableRequestSizeLimit]
+
         public async Task<IActionResult> UploadContent()
         {
 
-            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var files = Request.Form.Files;
             var description  = Request.Form ["description"];
@@ -42,8 +44,10 @@ namespace BlogApp.Controllers
             var total_file_string = new string("");
             var total_file_names = new string("");
 
+
             if (files != null && files.Count > 0)
             {
+
                 foreach (var file in files)
                 {
                     if (file.Length > 0)

@@ -36,7 +36,9 @@ namespace BlogApp.Controllers
                 _roleManager.CreateAsync(new IdentityRole(model.Name)).GetAwaiter().GetResult();
             }
             return RedirectToAction("Index");
-        } 
+        }
+        
+
 
     }
 }

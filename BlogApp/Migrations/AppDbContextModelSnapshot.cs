@@ -65,6 +65,140 @@ namespace BlogApp.Migrations
                     b.ToTable("Blogs");
                 });
 
+            modelBuilder.Entity("BlogApp.Models.Comment", b =>
+                {
+                    b.Property<int?>("CommentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("CommentId"), 1L, 1);
+
+                    b.Property<int?>("BlogID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CommentString")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CommentId");
+
+                    b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("BlogApp.Models.Feed", b =>
+                {
+                    b.Property<int>("FeedId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FeedId"), 1L, 1);
+
+                    b.Property<string>("Comments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FeedDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FeedFileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FeedFilePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FeedKeywords")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FeedTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Likes")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("FeedId");
+
+                    b.ToTable("Feeds");
+                });
+
+            modelBuilder.Entity("BlogApp.Models.FeedComments", b =>
+                {
+                    b.Property<int?>("CommentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("CommentId"), 1L, 1);
+
+                    b.Property<string>("FeedCommentString")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("FeedID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CommentId");
+
+                    b.ToTable("FeedComments");
+                });
+
+            modelBuilder.Entity("BlogApp.Models.FeedLike", b =>
+                {
+                    b.Property<int?>("FeedLikeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("FeedLikeId"), 1L, 1);
+
+                    b.Property<int?>("FeedID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FeedTotalLikeCount")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsLiked")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("FeedLikeId");
+
+                    b.ToTable("FeedLikes");
+                });
+
+            modelBuilder.Entity("BlogApp.Models.Likes", b =>
+                {
+                    b.Property<int?>("LikeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("LikeId"), 1L, 1);
+
+                    b.Property<int?>("BlogID")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsLiked")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("TotalLikeCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("LikeId");
+
+                    b.ToTable("Likes");
+                });
+
             modelBuilder.Entity("BlogApp.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -94,6 +228,10 @@ namespace BlogApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

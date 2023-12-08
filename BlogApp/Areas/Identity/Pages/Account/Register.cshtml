@@ -7,17 +7,13 @@
 @* <h1>@ViewData["Title"]</h1> *@
 
 <div class="row">
-    <div class="col-lg-5 col-md-6 col-12 signimage d-block m-auto">
-        <img src="https://i.pinimg.com/736x/e8/5f/17/e85f1701f04ed9cb2fbc8c7cc5ca7cff.jpg" /> 
+    <div class="col-lg-6 col-md-6 col-12 signimage d-block m-auto">
+        <img src="https://media.npr.org/assets/img/2020/10/07/gettyimages-1278814238_custom-87f240f7dd4c22e2d0b572726624828617442483-s1100-c50.jpg"  />
     </div>
-    <div class="col-lg-7 col-md-6 col-12 d-block m-auto layout">
+    <div class="col-lg-6 col-md-6 col-12 d-block m-auto layout">
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <h2 class="text-center text_variant">Create a new account</h2>
-            <blockquote class="blockquote text-center" style="font-size:13px">
-                <p class="mb-1">"Some books leave us free and some books make us free."</p>
-                <br />
-                <footer class="blockquote-footer">Ralph Waldo Emerson</footer>
-            </blockquote>
+            <h2 class="text-center text_variant letter_spaced_caps">Create your account</h2>
+
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger" style="font-size:12px"></div>
             <div class="row">
@@ -80,7 +76,7 @@
                 <em>Already an user, Please</em>
                 <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl"><strong>Log-In</strong></a>
             </p>
-            <button id="registerSubmit" type="submit" class="btn submit_button">Register</button>
+            <button id="registerSubmit" type="submit" class="submit_button w-25">Register</button>
         </form>
     </div>
     @* <div class="col-md-6 col-md-offset-2">

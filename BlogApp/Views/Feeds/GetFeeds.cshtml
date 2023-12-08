@@ -1,0 +1,177 @@
+﻿@using BlogApp.Data;
+@using Microsoft.EntityFrameworkCore;
+
+
+@model List<Feed>;
+
+
+
+<section>
+    <div class="container scrollable_div">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <script>
+                    $(document).ready(function () {
+
+                        var feedId = @item.FeedId; // Get the feed ID for this iteration
+                        $.get('@Url.Action("GetFeedLikes", "Feeds", new { id = item.FeedId })', function (data) {
+                            $('#totalLikes_' + feedId).text(data.totalLikeCount); // Use a unique ID for totalLikes
+                            console.log(data);
+                            if (data.status) {
+                                $('#likeButton_' + feedId).addClass('liked'); // Use a unique ID for likeButton
+                            } else {
+                                $('#likeButton_' + feedId).addClass('disliked'); // Use a unique ID for likeButton
+                            }
+                        });
+                    });
+                    $(document).ready(function () {
+                        var feedId = @item.FeedId;
+                        $.get('@Url.Action("GetUserName", "Feeds")', { id: '@item.UserId' }, function (data) {
+                            var firstTwoLetters = data.substring(0, 2);
+                            $('#username_' + feedId).text(data);
+                            $('#usericon_' + feedId).text(firstTwoLetters);
+
+                        });
+                    });
+                    $(document).ready(function () {
+                        var feedId = @item.FeedId; // Get the feed ID for this iteration
+
+                        // Make an AJAX request for comments for the current feed
+                        $.get('@Url.Action("GetFeedComments", "Comment", new { id = item.FeedId })', function (data) {
+                            if (data) {
+                                $('#totalComments_' + feedId).text(data.totalCommentCount);
+
+                                // Check if data.comments is not null or undefined before assigning to comment_array
+                                var commentArray = data.comments || [];
+                                console.log(commentArray);
+
+                                // Add comments to the UI for the current feed
+                                addCommentsToUI(commentArray, feedId);
+                            } else {
+                                console.error('Error: No data received from the server.');
+                            }
+                        });
+                        function addCommentsToUI(comments, currentFeedId) {
+                            // Selectors specific to the current feed
+                            var commentText = $('#comment_text_' + currentFeedId);
+                            var commentCount = $('#comment_count_' + currentFeedId);
+                            var commentList = $('#commentList_' + currentFeedId);
+
+                            // Show comment text and count
+                            commentText.removeClass('d-none').addClass('d-block');
+                            commentCount.removeClass('d-none').addClass('d-block');
+
+                            // Clear existing items in the list
+                            commentList.empty();
+
+                            // Add each comment as a figure element for the current feed
+                            comments.forEach(function (comment) {
+                                var figure = $('<figure>');
+                                var blockquote = $('<blockquote class="blockquote_font fw-bold">');
+                                var p = $('<p class="blockquote_font">').text(comment.feedCommentString);
+
+                                blockquote.append(p);
+                                figure.append(blockquote);
+
+                                // Add a figcaption with user information
+                                var figcaption = $('<figcaption class="blockquote-footer blockquote_footer_font">');
+                                var cite = $('<cite title="User ID">' + comment.userId + '</cite>');
+                                figcaption.append('Says  ', cite);
+                                figure.append(figcaption);
+
+                                // Append the figure to the commentList for the current feed
+                                commentList.append(figure);
+                            });
+                        }
+                    });
+
+                </script>
+
+                <div class="col-lg-8 col-md-12 col-12">
+                    <div class="card mb-4">
+                        <div class="d-flex justify-content-between">
+                            <span id="usericon_@item.FeedId" class="user_icon"></span>
+                            <p id="username_@item.FeedId" class="text_format pt-2"></p>
+                        </div>
+                        @{
+                            var filePathParts = item.FeedFilePath.Split(',');
+                        }
+
+                        @if (item.FeedFilePath.Contains(','))
+                        {
+                            <img src="@Html.DisplayFor(modelItem => filePathParts[0])" class="card-img-top" alt="images" style="object-fit:contain">
+                        }
+                        else
+                        {
+                            <img src="@Html.DisplayFor(modelItem => item.FeedFilePath)" class="card-img-top" alt="images" style="object-fit:contain">
+                        }
+
+                        <div class="card-body">
+                            <h4 class="card-title text-center text_variant mb-3 card_overflow letter_spaced ">@Html.DisplayFor(modelItem => item.FeedTitle)</h4>
+
+                            <p class="card-text mb-2 text-center fw-light card_overflow">
+                                @Html.DisplayFor(modelItem => item.FeedDescription)
+                            </p>
+                            <p class="card-text text-italic text-center fw-bold">
+                                @if (!string.IsNullOrWhiteSpace(item.FeedKeywords))
+                                {
+                                    <span>@item.FeedKeywords.Replace(",", ",#")</span>
+                                }
+                            </p>
+                            <div class="d-flex justify-content-around">
+                                <a asp-action="UpdateFeedLikes" asp-route-id="@item.FeedId" class="fa fa-heart review_button border-0" id="likeButton_@item.FeedId" aria-hidden="true">
+                                    <sup id="totalLikes_@item.FeedId"></sup>
+                                </a>
+                                <sup id="name_@item.FeedId"></sup>
+                                <button type="button" class="fa-regular fa-comment review_button border-0" data-bs-toggle="modal" data-bs-target="#exampleModal_@item.FeedId" data-feedid="@item.FeedId">
+                                    <sup id="totalComments_@item.FeedId"></sup>
+                                </button>
+
+
+
+                                <div class="modal fade" id="exampleModal_@item.FeedId" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title letter_spaced_caps text_variant d-block m-auto" id="exampleModalLabel">Comments</h4>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+
+                                                <div id="commentList_@item.FeedId" class=""></div>
+
+                                             @*    <h1 id="displayFeedId">Feed ID: <span data-feedid="@item.FeedId">@item.FeedId</span></h1> *@
+                                                
+                                                <form method="post" action="@Url.Action("UpdateFeedComments", "Comment")">
+                                                    <input type="hidden" name="id" value="@item.FeedId" /> <!-- This line is unchanged -->
+                                                    <div class="form-group">
+                                                        <label for="comment" class="control-label text-secondary text-italic mb-2">Add your Comment:</label>
+                                                        <input type="text" name="comment" class="form-control" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <button type="submit" class="submit_button w-50">post</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+
+        </div>
+    </div>
+
+
+
+
+
+</section>
+

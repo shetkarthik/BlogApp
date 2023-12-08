@@ -11,5 +11,7 @@
 
         public string Designation { get; set; }
 
+        public string UserId { get; set; }
+
     }
 }

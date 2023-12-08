@@ -8,16 +8,15 @@
 {
         var username = @UserManager.GetUserName(User);
 
-        var trimmedString = username.Substring(0,2);
+                <li class="nav-item">
+                    <a class="nav-link text-dark text_format" asp-area="" asp-controller="Home" asp-action="GetUserDetails">Profile</a> 
+                </li>
+                <li class="nav-item">
+                    <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button id="logout" type="submit" class="border-0 ps-3 nav-link text_format" style="background:none">Logout</button>
+                    </form>
+                </li>
 
-        <li class="nav-item">
-            <a id="manage" class="nav-link text-dark fa fa-user logo" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage"></a>
-    </li>
-    <li class="nav-item">
-        <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button id="logout" type="submit" class="nav-link btn btn-link text-dark text_format">Logout</button>
-        </form>
-    </li>
 }
 else
 {

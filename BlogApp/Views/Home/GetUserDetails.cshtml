@@ -1,0 +1,21 @@
+﻿@model BlogApp.Models.User;
+@{
+    var user_icon = Model.FullName.Substring(0, 2);
+}
+ 
+<div class="container h-50  d-flex justify-content-center user_contianer_border">
+    <div class="align-content-center mt-5">
+    <div class="row">
+        <div class="col-lg-8 col-md-12 col-12">
+            <p class="letter_spaced">Name : @Model.FullName</p>
+            <p class="letter_spaced">Designation : @Model.Designation</p>
+            <p class="letter_spaced">Contact No : @Model.ContactNo</p>
+            <p class="letter_spaced">Gender : @Model.Gender</p>
+            <p class="letter_spaced">Email : @Model.Email</p>
+        </div> 
+        <div class="col-lg-4 col-md-12 col-12">
+            <span class="profile_icon text_format">@user_icon</span>
+            </div>
+        </div> 
+    </div>
+</div>

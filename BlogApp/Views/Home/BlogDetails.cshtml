@@ -1,0 +1,238 @@
+﻿@model BlogApp.Models.Blog
+
+@{
+    ViewData["Title"] = "BlogDetails";
+    
+}
+
+
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+            <h1 class="display-3 text-center text_variant text-bold mb-2">@Html.DisplayFor(model => model.BlogTitle)</h1>
+            <p class="text-center mb-3 fw-bold text-italic">#@Html.DisplayFor(model => model.BlogKeywords)</p>
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12 mb-5">
+            @{
+                var imageFilePath = Model.FilePath.Split(',');
+
+            }
+
+            @if (Model.FilePath.Contains(','))
+            {
+                <img src="@Html.DisplayFor(modelItem => imageFilePath[0])" class="card-img-top card_image" alt="images" style="height:70vh;object-fit:contain">
+            }
+            else
+            {
+                <img src="@Html.DisplayFor(modelItem => modelItem.FilePath)" class="card-img-top card_image" alt="images" style="height:70vh;object-fit:contain">
+            }
+            @* <img class="d-block m-auto img-fluid" src="@Html.DisplayFor(model => imageFilePath)" style="height:70vh; object-fit:contain" /> *@
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12 ">
+            <h3 class="blog_display_subtitle font_auto">@Html.DisplayFor(model => model.BlogSubtitle)</h3>
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+            <h4 class="text-center fw-lighter m-5 capitalize-first-letter font_auto">
+               
+                    @Html.DisplayFor(model => model.BlogDescription)
+                
+            </h4>
+        </div>
+        @if (Model.FilePath.Contains(','))
+        {
+            @for (int i = 1; i < Math.Min(4, imageFilePath.Length); i++)
+            {
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                    <img src="@Html.DisplayFor(modelItem => imageFilePath[i])" class="card-img-top card_image" alt="images" style="height: 70vh; object-fit: contain">
+                </div>
+            }
+        }
+
+        <hr />
+
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-4"></div>
+            <div class="col-lg-4 col-md-4 col-4">
+                <div class="d-flex justify-content-center m-3 border_like_box">
+                    
+                    <a asp-action="UpdateLikes" asp-route-id="@Model.BlogId" class="fa fa-heart review_button" id="likeButton" aria-hidden="true"></a>
+    
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-4"></div>
+        </div>
+        <div class="d-flex justify-content-between">
+        <h3 class="text-start text_variant fw-lighter">Likes : <span id="totalLikes"></span></h3>
+        <h3 class="text-start text_variant fw-lighter d-none" id="comment_count">Comments : <span id="totalComments"></span></h3>
+        </div>
+    </div>
+
+    <div class="comment_container">
+        <h2 class="text_variant text-center">Comments</h2>
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <form method="post" action="@Url.Action("UpdateComments", "Comment")">
+                    <input type="hidden" name="id" value="@Model.BlogId" />
+                    <div class="form-group">
+                        <label for="comment" class="control-label text-secondary text-italic mb-2">Provide your feedback:</label>
+                        <input type="text" name="comment" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="submit_button w-50">Submit</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-4">
+
+            </div>
+            
+                
+            </div>
+        </div>
+    </div>
+
+
+    <h1 class="display-2" id="totalComments"></h1>
+
+
+    <div class="comment_container">
+    <h2 class="text_variant text-start d-none" id="comment_text"> All Comments :</h2>
+   
+        <ul id="commentList">
+            <!-- Comment items will be dynamically added here -->
+        </ul>
+    </div>
+
+
+
+ 
+
+    
+</div>
+
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+    <script>
+        $(document).ready(function () {
+            $.get('@Url.Action("GetLikes", "Home", new { id = Model.BlogId })', function (data) 
+            {
+                $('#totalLikes').text(data.totalLikeCount);
+                console.log(data);
+                if (data.status) {
+                    $('#likeButton').addClass('liked');
+                }
+                else {
+                    $('#likeButton').addClass('disliked');
+                }
+            });
+        });
+        $(document).ready(function () {
+            $.get('@Url.Action("GetComments", "Comment", new { id = Model.BlogId })', function (data) {
+                if (data) {
+                    $('#totalComments').text(data.totalCommentCount);
+
+                    // Check if data.comments is not null or undefined before assigning to comment_array
+                    var comment_array = data.comments || [];
+                    console.log(comment_array);
+
+                    // Add comments to the UI
+                    addCommentsToUI(comment_array);
+                } else {
+                    console.error('Error: No data received from the server.');
+                }
+            });
+
+            // Function to add comments to the comment list
+            function addCommentsToUI(comments) {
+                // Selectors
+                var commentText = $('#comment_text');
+                var commentCount = $('#comment_count');
+                var commentList = $('#commentList');
+
+                // Show comment text and count
+                commentText.removeClass('d-none').addClass('d-block');
+                commentCount.removeClass('d-none').addClass('d-block');
+
+                // Clear existing items in the list
+                commentList.empty();
+
+                // Add each comment as a figure element
+                // Add each comment as a figure element
+                comments.forEach(function (comment) {
+                    var figure = $('<figure>');
+                    var blockquote = $('<blockquote class="blockquote">');
+                    var p = $('<p class="text-italic">').text(comment.commentString);
+
+                    blockquote.append(p);
+                    figure.append(blockquote);
+
+                    // Add a figcaption with user information
+                    var figcaption = $('<figcaption class="blockquote-footer">');
+                    var cite = $('<cite title="User ID">' + comment.userId + '</cite>');
+                    figcaption.append('Says  ', cite);
+                    figure.append(figcaption);
+
+                    // Append the figure to the commentList
+                    commentList.append(figure);
+                });
+               
+            }
+
+
+        });
+
+
+    </script>
+}
+
+
+@* <div>
+    <h4>Blog</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BlogId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BlogId)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BlogDescription)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BlogDescription)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BlogSubtitle)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BlogSubtitle)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BlogTitle)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BlogTitle)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BlogKeywords)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BlogKeywords)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FilePath)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FilePath)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.BlogId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div> *@
